@@ -288,3 +288,24 @@ func (manager *Manager) isSecure(req *http.Request) bool {
 	}
 	return true
 }
+
+func (manager *Manager) SessionExist(sid string) bool {
+	return manager.provider.SessionExist(sid)
+}
+
+func (manager *Manager) genSessionId() (string, error) {
+	b := make([]byte, manager.config.SessionIdLength)
+	n, err := rand.Read(b)
+	if n != len(b) || err != nil {
+		return "", fmt.Errorf("Could not successfully read from the system CSPRNG.")
+	}
+	return hex.EncodeToString(b), nil
+}
+
+func (manager *Manager) CreateSession() (session SessionStore, err error) {
+	sid, errs := manager.genSessionId()
+	if errs != nil {
+		return nil, errs
+	}
+	return manager.provider.SessionRead(sid)
+}
