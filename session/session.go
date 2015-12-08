@@ -309,3 +309,7 @@ func (manager *Manager) CreateSession() (session SessionStore, err error) {
 	}
 	return manager.provider.SessionRead(sid)
 }
+
+func (manager *Manager) DestroySession(sid string) {
+	manager.provider.SessionDestroy(sid)
+}
